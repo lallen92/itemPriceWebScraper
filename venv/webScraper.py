@@ -14,8 +14,18 @@ fredPerryItemDetails = fredPerry.getAsosItemDetails()
 # Format the item Detail for email
 fredPerryText = fredPerry.formatDetailsForEmail(fredPerryItemDetails)
 
+
+url = 'https://www.asos.com/men/a-to-z-of-brands/tommy-hilfiger/cat/?cid=5247&currentpricerange=10-405&refine=currentprice:10%3C50'
+# Create a Tommy Hilfiger Object
+tommyHilfiger = getAsosItem(url, headers, firstFredPerryClass, secondFredPerryClass)
+# Get the item Details
+tommyHilfigerItemDetails = tommyHilfiger.getAsosItemDetails()
+# Format the item Detail for email
+tommyHilfigerText = tommyHilfiger.formatDetailsForEmail(tommyHilfigerItemDetails)
+
+fullItemText = "Fred Perry \n" + fredPerryText + "\n\n" + "Tommy Hilfiger \n" + tommyHilfigerText
 # Email the details
-send = Email(fredPerryText)
+send = Email(fullItemText)
 send.sendEmail()
 
 
