@@ -15,13 +15,35 @@ class getAsosItem:
 
 			:return: 				A dictionary containing the item details and a link to the item.
 		'''
-		page = requests.get(self.url, headers=self.headers)
-		soup = BeautifulSoup(page.content, 'html.parser')
+		multiplePages = True
+		# Start the count at 2 because 1 is the used in default query
+		pageNumber = 2
 
-		for line in soup.find_all(class_=self.firstClass):
-			for subSearch in line.find_all(class_=self.secondClass):
-				link = (subSearch['href'])
-				self.asosItemDetails.update({subSearch.text: link.strip()})
+		# Need to loop continuosuly in case there are multiple pages returned
+		while multiplePages:
+			page = requests.get(self.url, headers=self.headers)
+			if page.status_code == 404:
+				return self.asosItemDetails
+
+			soup = BeautifulSoup(page.content, 'html.parser')
+
+			# Extract the items
+			for line in soup.find_all(class_=self.firstClass):
+				for subSearch in line.find_all(class_=self.secondClass):
+					link = (subSearch['href'])
+					self.asosItemDetails.update({subSearch.text: link.strip()})
+
+			# Check are we on the last page
+			amountOfItems = soup.find_all(class_="fWxiz1Y")
+			for value in amountOfItems:
+				currentItemNumber = int((value.find('progress')['value']))
+				totalItemNumber = int((value.find('progress')['max']))
+
+			if currentItemNumber != totalItemNumber:
+				self.url = self.url.replace(self.url[len(self.url)-1], str(pageNumber))
+				pageNumber += 1
+			else:
+				multiplePages = False
 
 		return self.asosItemDetails
 
